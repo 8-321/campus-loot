@@ -542,6 +542,8 @@
 
   /* ---------------- 启动 ---------------- */
   function init() {
+    var qrLink = document.getElementById('qrUrl');
+    if (qrLink && typeof DEPLOY_URL === 'string') { qrLink.textContent = DEPLOY_URL; qrLink.href = DEPLOY_URL; }
     bind();
     initPublish();
     renderHome();

@@ -85,9 +85,13 @@ code{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-siz
 .qr img{ width:130px; height:130px; }
 .qr__label{ font-size:10.5px; letter-spacing:.12em; color:var(--gray); margin:0 0 6px; }
 .qr__url{
+  display:inline-block;
   font-size:12px; line-height:1.5; word-break:break-all; margin:0 0 8px;
+  color:var(--ink); text-decoration:none;
+  border-bottom:1px solid var(--line);
   font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
 }
+.qr__url:hover{ border-bottom-color:var(--ink); }
 .qr__hint{ font-size:11px; color:var(--gray); margin:0; }
 
 .brief__notes{ list-style:none; margin:0 0 22px; padding:0; }

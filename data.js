@@ -2,6 +2,9 @@
    隐私：不含真实姓名 / 学号 / 手机号 / 宿舍号 / 微信 / 邮箱 / 学校全称。
    换真实校园时，只改 CAMPUSES 里的 spots 与 SEED 即可。 */
 
+/* 部署地址：二维码 assets/qr.png 与左栏链接都指向这里 */
+const DEPLOY_URL = 'https://8-321.github.io/campus-loot/';
+
 const CAMPUSES = [
   {
     id: 'north',
