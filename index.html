@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>捡漏 · 校园免费剩余物</title>
+<meta name="description" content="校园里正在被免费送掉的东西，按距离由近到远排好。纯静态演示。">
+<link rel="icon" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2317160F'/%3E%3Crect x='6' y='14' width='20' height='3' fill='%23F7F4EB'/%3E%3Crect x='6' y='21' width='12' height='3' fill='%23B4502D'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#F7F4EB">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="stage">
+
+  <!-- ================= 左：说明 ================= -->
+  <aside class="brief">
+    <div class="brief__kicker">
+      <span class="dot"></span>校园捡漏 · 零依赖单页 · 演示版
+    </div>
+
+    <h1 class="brief__title">把正在被扔掉的东西，<br>按你脚下的距离排好。</h1>
+
+    <p class="brief__lede">校园里每天都有免费的东西在被丢掉：食堂闭餐的菜、毕业留下的教材、临时空出的名额、宿舍换下来的台灯。它们不缺，缺的是一个「现在、离我多远」的入口。</p>
+
+    <div class="brief__facts">
+      <div class="fact"><b>14</b><span>条种子数据</span></div>
+      <div class="fact"><b>60–1180</b><span>米距离分层</span></div>
+      <div class="fact"><b>0</b><span>依赖 / 构建</span></div>
+    </div>
+
+    <div class="brief__qr">
+      <div class="qr">
+        <img id="qrImg" src="assets/qr.png" alt="手机扫码打开演示页" width="132" height="132">
+      </div>
+      <div class="qr__meta">
+        <p class="qr__label">课堂上扫码打开</p>
+        <p class="qr__url" id="qrUrl">正在部署…</p>
+        <p class="qr__hint">手机浏览器直接打开，无需安装。</p>
+      </div>
+    </div>
+
+    <ul class="brief__notes">
+      <li><b>距离是主视觉</b>：卡片右栏 24px 直接写 <em>120m</em>，时间降到 9.5px；只有 30 分钟内过期才变砖红。</li>
+      <li><b>零摩擦领取</b>：不登录、不留手机号，点「领取」出 4 位码，到现场报数字。</li>
+      <li><b>直角与磨砂</b>：全部 border-radius 0；顶栏、底栏、详情、吐司都是 blur(20px) saturate(170%) 玻璃。</li>
+      <li><b>只用位移与透明度</b>：160–340ms，列表入场只做 translateY，不停留在 opacity:0。</li>
+    </ul>
+
+    <p class="brief__foot">
+      演示数据为虚构，不含真实姓名 / 学号 / 手机号 / 宿舍号 / 学校全称；地点集中在 <code>CAMPUSES</code> 常量里，可整块替换。<br>
+      图片为公开演示图，<b>上线前请换成自有版权图</b>。
+    </p>
+  </aside>
+
+  <!-- ================= 右：手机 ================= -->
+  <main class="device">
+    <div class="phone" id="phone">
+
+      <header class="topbar glass">
+        <div class="topbar__left">
+          <span class="topbar__campus" id="campusName">北苑</span>
+          <span class="topbar__scope">仅校内 · 免费</span>
+        </div>
+        <div class="topbar__right">
+          <span class="live"><i class="live__dot"></i><span id="liveCount">14</span> 条在架</span>
+        </div>
+      </header>
+
+      <div class="screen" id="screen">
+
+        <!-- ---------- 首页 ---------- -->
+        <section class="view is-active" data-view="home" id="viewHome">
+          <div class="hero">
+            <p class="hero__eyebrow">现在 · <span id="heroArea">北苑校区</span></p>
+            <h2 class="hero__title" id="heroTitle">正在数…</h2>
+            <div class="hero__row">
+              <div class="hero__nearest">
+                <span class="hero__num" id="nearestNum">0</span><span class="hero__unit">m</span>
+                <span class="hero__cap">最近的</span>
+              </div>
+              <div class="hero__urgent" id="heroUrgent">—</div>
+            </div>
+          </div>
+
+          <div class="chips bleed" id="chips"></div>
+
+          <section class="block">
+            <div class="sec-head">
+              <h3>手慢无</h3>
+              <span>30 分钟内 / 100 米内</span>
+            </div>
+            <div class="rail bleed" id="rail"></div>
+          </section>
+
+          <section class="block block--list">
+            <div class="sec-head">
+              <h3>按距离</h3>
+              <span id="listMeta">—</span>
+            </div>
+            <div id="bands"></div>
+            <p class="empty" id="emptyHint" hidden>这个分类眼下没有东西。换个分类，或者去发布一条。</p>
+          </section>
+        </section>
+
+        <!-- ---------- 发布 ---------- -->
+        <section class="view" data-view="publish">
+          <div class="page-head">
+            <h2>我有东西要送</h2>
+            <p>发出去只要 20 秒。别人看到的是距离和还剩多久。</p>
+          </div>
+
+          <form id="publishForm" autocomplete="off" novalidate>
+            <label class="field">
+              <span class="field__label">是什么</span>
+              <input type="text" id="fTitle" maxlength="24" placeholder="例：三食堂拼盘 · 两盘热菜">
+            </label>
+
+            <div class="field">
+              <span class="field__label">分类</span>
+              <div class="seg" id="fCat"></div>
+            </div>
+
+            <label class="field">
+              <span class="field__label">放哪儿</span>
+              <select id="fSpot"></select>
+            </label>
+
+            <div class="field">
+              <span class="field__label">离你多远 <b id="fDistOut">40m</b></span>
+              <input type="range" id="fDist" min="20" max="1200" step="10" value="40">
+            </div>
+
+            <div class="field field--two">
+              <label>
+                <span class="field__label">数量</span>
+                <input type="number" id="fStock" min="1" max="20" value="1">
+              </label>
+              <label>
+                <span class="field__label">多久过期</span>
+                <select id="fExp">
+                  <option value="20">20 分钟</option>
+                  <option value="45">45 分钟</option>
+                  <option value="120">2 小时</option>
+                  <option value="1440" selected>今天内</option>
+                  <option value="4320">3 天</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="field">
+              <span class="field__label">大概值多少钱（用于「省钱账单」）</span>
+              <input type="number" id="fValue" min="0" max="2000" value="0">
+            </label>
+
+            <div class="field">
+              <span class="field__label">配图（演示图）</span>
+              <div class="picker" id="fPhoto"></div>
+            </div>
+
+            <p class="form__note">不写姓名、学号、手机号、宿舍号。领取者只拿到一个 4 位码。</p>
+            <button type="submit" class="btn btn--ink" id="publishBtn">发布 · 排在列表最前面</button>
+          </form>
+        </section>
+
+        <!-- ---------- 我的 ---------- -->
+        <section class="view" data-view="me">
+          <div class="page-head">
+            <h2>我的</h2>
+            <p>不登录也能用，数据只存在这台手机上。</p>
+          </div>
+
+          <div class="bill">
+            <p class="bill__label">这一年白拿回来的</p>
+            <p class="bill__num"><span class="bill__cur">¥</span><span id="savedNum">0</span></p>
+            <p class="bill__sub"><span id="claimCount">0</span> 次领取 · 一次都没付钱</p>
+          </div>
+
+          <section class="block">
+            <div class="sec-head"><h3>领取记录</h3><span id="claimMeta">4 位码请在现场出示</span></div>
+            <div id="claims"></div>
+            <p class="empty" id="claimEmpty">还没有领取记录。回首页点一件离你最近的东西。</p>
+          </section>
+
+          <section class="block">
+            <div class="sec-head"><h3>我发布的</h3><span id="mineMeta">—</span></div>
+            <div id="mineList"></div>
+            <p class="empty" id="mineEmpty">你还没有发布过。</p>
+          </section>
+
+          <div class="pro" id="proCard">
+            <div class="pro__top">
+              <span class="pro__tag">Pro</span>
+              <span class="pro__price">¥6 / 月</span>
+            </div>
+            <h3 class="pro__title">提前 5 分钟看见</h3>
+            <p class="pro__desc">30 分钟内的东西，普通用户先看到「有 1 件」，Pro 先看到内容。过期前 30 分钟推一条提醒。不抽任何佣金。</p>
+            <button class="btn btn--ghost" id="proBtn">开通演示 Pro</button>
+          </div>
+
+          <p class="foot-note">数据存在本机 localStorage。清缓存即清空。<br>演示图，上线前请替换为自有版权图。</p>
+        </section>
+
+        <!-- ---------- 规则 ---------- -->
+        <section class="view" data-view="rules">
+          <div class="page-head">
+            <h2>这里的四条规矩</h2>
+            <p>规则少，才有人真的用。</p>
+          </div>
+
+          <ol class="rules">
+            <li>
+              <b>只送，不卖。</b>
+              <span>任何一条标价的帖子会被下架。要卖去二手平台。</span>
+            </li>
+            <li>
+              <b>过期时间要真。</b>
+              <span>写 20 分钟就是 20 分钟。倒计时是砖红色的，骗一次就会被举报。</span>
+            </li>
+            <li>
+              <b>不留联系方式。</b>
+              <span>领取只走 4 位码：发布者看到码就交付，双方都不用交换微信或手机号。</span>
+            </li>
+            <li>
+              <b>拿走就用，不用道谢。</b>
+              <span>东西被用掉才算没浪费。别囤，别转卖。</span>
+            </li>
+          </ol>
+
+          <div class="block">
+            <div class="sec-head"><h3>关于隐私</h3><span>本地</span></div>
+            <p class="para">页面不发起任何需要登录态的请求，不写 cookie，不上报埋点。领取记录和发布记录只写在这台手机的 localStorage 里，换设备就看不到。</p>
+            <p class="para">示例地点是虚构的，集中在一个 <code>CAMPUSES</code> 常量里；换成真实校园时整块替换即可，不需要改逻辑。</p>
+          </div>
+
+          <p class="foot-note">演示图 · 上线前换成自有版权图<br>源码公开：见部署仓库</p>
+        </section>
+
+      </div><!-- /screen -->
+
+      <!-- ---------- 底栏 ---------- -->
+      <nav class="tabbar glass" id="tabbar">
+        <button class="tab is-active" data-tab="home">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 11.2 12 4l8.5 7.2V20H3.5z"/><path d="M9.5 20v-5.5h5V20"/></svg>
+          <span>捡漏</span>
+        </button>
+        <button class="tab" data-tab="publish">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M12 8.5v7M8.5 12h7"/></svg>
+          <span>发布</span>
+        </button>
+        <button class="tab" data-tab="me">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 20c0-3.6 3.4-5.6 7.5-5.6s7.5 2 7.5 5.6"/><circle cx="12" cy="8" r="3.4"/></svg>
+          <span>我的</span>
+        </button>
+        <button class="tab" data-tab="rules">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h10.5A3.5 3.5 0 0 1 19 7.5V20H8.5A3.5 3.5 0 0 1 5 16.5z"/><path d="M9 8.5h6M9 12h6"/></svg>
+          <span>规则</span>
+        </button>
+      </nav>
+
+      <!-- ---------- 详情面板 ---------- -->
+      <div class="scrim" id="scrim" hidden></div>
+      <div class="sheet glass" id="sheet" aria-hidden="true">
+        <div class="sheet__scroll" id="sheetScroll"></div>
+        <div class="sheet__action glass" id="sheetAction"></div>
+      </div>
+
+      <div class="toast glass" id="toast" role="status" aria-live="polite"></div>
+
+    </div><!-- /phone -->
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
