@@ -573,10 +573,10 @@ input[type=range]::-webkit-slider-thumb{
 
 /* ---------------- 吐司 ---------------- */
 .toast{
-  position:absolute; left:18px; right:18px; bottom:76px; z-index:12;
+  position:absolute; left:18px; right:18px; top:72px; z-index:12;
   padding:11px 14px; font-size:11.5px; line-height:1.5;
   border:1px solid var(--line);
-  opacity:0; transform:translateY(10px); pointer-events:none;
+  opacity:0; transform:translateY(-10px); pointer-events:none;
   transition:opacity 200ms ease,transform 240ms cubic-bezier(.2,.78,.24,1);
 }
 .toast.is-on{ opacity:1; transform:translateY(0); }
